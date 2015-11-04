@@ -1,10 +1,10 @@
 ---
 layout: post
 title: Monter ses environnements de développement avec docker - Partie 3
-permalink: monter-ses-environnements-de-developpement-avec-docker-partie-3.html
+permalink: monter-ses-environnements-de-developpement-avec-docker-partie-3/
 logo: /assets/img/baleine3.jpg
 tags: docker fr
-categories: docker
+categories: post
 excerpt: Comment utiliser les images précédement créées ? Architecture des environnements de développement - Utilisation de docker-compose - Gestion des droits sur les fichier partagés entre l'hôte et les conteneurs - Persistance des données - Exemples d'environnements pour des projets Magento, Symfony, Django, Express.js, Sails.js
 ---
 Cette article est le dernier d'une série de trois. Ces articles ne sont pas destinés à enseigner `Docker`, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.

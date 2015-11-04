@@ -1,0 +1,10 @@
+# Plugins
+title: Ano.io
+description: A propos de développement web - en français
+url: http://www.ano.io
+cdn_url: ''
+gems:
+  - jemoji
+  - jekyll-sitemap
+  - jekyll-redirect-from
+  - jekyll-feed

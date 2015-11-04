@@ -1,10 +1,10 @@
 ---
 layout: post
 title: Monter ses environnements de développement avec Docker - Partie 1
-permalink: monter-ses-environnements-de-developpement-avec-docker-partie-1.html
+permalink: monter-ses-environnements-de-developpement-avec-docker-partie-1/
 logo: /assets/img/baleine1.jpg
 tags: docker fr
-categories: docker
+categories: post
 excerpt: Cet article est une introduction pour expliquer les raisons d'utiliser Docker pour monter des environnements de développement. Les articles suivants proposeront une solution pour la mise en place de ces environnements de développement. Qu'est ce que Docker ? Pourquoi l'utiliser pour votre environnement de développement ?
 ---
 Cet article est le premier d'une série de trois. Ces articles ne sont pas destinés à enseigner Docker, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.

@@ -114,10 +114,16 @@ body { background: url('./background.jpg') }
 }
 */
 
-#blog-logo-nav img {
-    display: block;
-    max-height: 42px;
-    width: auto;
+.nav-logo-link {
+  padding: 0;
+}
+
+ul li a.nav-icon-link {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.navbar-brand img {
     margin: 4px;
     line-height: 0;
     border: 1px solid #347a00;
@@ -183,7 +189,6 @@ body { background: url('./background.jpg') }
 }
 
 .author-thumb {
-    max-height: 42px;
     border: 1px solid #3e3f3a;
 }
 

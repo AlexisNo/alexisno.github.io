@@ -81,7 +81,7 @@ Les packages `curl`, `wget`, `git`, `htop`, `unzip`, `vim` et `telnet` fournisse
 
 L'utilisateur *dev* pourra être utilisé pour effectuer les opérations qui ne nécessitent pas d'être exécutées par l'utilisateur *root*. Cet utilisateur sera aussi le propriétaire des fichiers partagés avec la machine hôte sur lesquels on devra avoir un accès en écriture (le code source du projet par exemple). Il y aura plus de détails à ce sujet [un peu plus loin dans cet article](#Gestion%20des%20droits%20sur%20les%20fichiers%20partag%C3%A9s%20entre%20les%20conteneurs%20et%20la%20machine%20h%C3%B4te).
 
-Pour nos environnements de développement, on aura probablement besoin d'accèder aux conteneurs (par exemple pour tester rapidement une modificaion de la configuration d'`Apache` ou de `Nginx`). On peut personnaliser le prompt des utilisateurs pour rendre cette utilisation plus agréable (ici en installant `oh-my-zsh` et quelques raccourcis pour `git`)
+Pour nos environnements de développement, nous souhaitons parfois ouvrir un shell dans nos conteneurs. On peut personnaliser le prompt des utilisateurs pour rendre cette utilisation plus agréable (ici en installant `oh-my-zsh` et quelques raccourcis pour `git`).
 
 Pour générer notre image de base, on utilise la commande `docker build`. Nommons cette image `ubuntu-dev`.
 <pre><code class="bash">docker build -t ubuntu-dev /chemin/vers/le/dossier/contenant/le/Dockerfile/
@@ -162,19 +162,21 @@ Les clés que nous cherchons sont donc `mysql-server/root_password` et `mysql-se
 
 
 ### Gestion des droits sur les fichiers partagés entre les conteneurs et la machine hôte
-Comme indiqué plus haut, certains fichiers partagés avec la machine hôte devront être accessibles en écriture. **Dans le conteneur, ce sera l'utilisateur `dev` qui en sera propriétaire**. Pour que l'utilisateur de la machine hôte en soit aussi propriétaire, **il faut que le couple `UID` / `GID` des deux utilisateurs soit identiques**. Par défaut l'`UID` et le `GID` de l'utilisateur `dev` vaudront `1000`. Si l'on souhaite modifier ces valeurs pour les faires correspondre aux identifiants de l'utilisateur sur la machine hôte, on pourra utiliser la commande `change-dev-id` qui est inclue dans l'image de base.
 
-    # Sur la machine hôte, recherchons les UID et GID de l'utilisateur courant
-    $ id
-    uid=1002(anoio) gid=1002(anoio) groups=1002(anoio),27(sudo)126(docker)
+Comme indiqué plus haut, certains fichiers et dossiers partagés avec la machine hôte devront être accessibles en écriture. **Dans le conteneur, ce sera l'utilisateur `dev` qui en sera propriétaire**. Pour que l'utilisateur de la machine hôte en soit aussi propriétaire, **il faut que le couple `UID` / `GID` des deux utilisateurs soit identique**. Par défaut l'`UID` et le `GID` de l'utilisateur `dev` vaudront `1000`. Si l'on souhaite modifier ces valeurs pour les faires correspondre aux identifiants de l'utilisateur sur la machine hôte, on pourra utiliser la commande `change-dev-id` qui est inclue dans l'image de base présentée ici.
 
+<pre><code class="bash"># Sur la machine hôte, recherchons les UID et GID de l'utilisateur courant
+$ id
+uid=1002(anoio) gid=1002(anoio) groups=1002(anoio),27(sudo)126(docker)
+</code></pre>
 
-    # Dans le Dockerfile qui générera notre image, on change les identifiants de l'utilisateur dev
-    # pour qu'ils correspondent à ceux de l'utilisateur de la machine hôte
-    RUN change-dev-id 1002      # Change l'UID et le GID à 1002
+<pre><code class="docker"># Dans le Dockerfile qui générera notre image, on change les identifiants de l'utilisateur dev
+# pour qu'ils correspondent à ceux de l'utilisateur de la machine hôte
+RUN change-dev-id 1002      # Change l'UID et le GID à 1002
 
-    # Autre exemple d'utilisation
-    RUN change-dev-id 1111 1234 # Change l'UID à 1111 et le GID à 1234
+# Autre exemple d'utilisation
+RUN change-dev-id 1111 1234 # Change l'UID à 1111 et le GID à 1234
+</code></pre>
 
 A présent que nous avons une image de base, que nous savons nous connecter à un conteneur en cours d'exécution, que nous savons scripter l'installation les packages qui nécessitent une interaction avec l'utilisateur et que nous pouvons gérer les droits sur les fichiers partagés entre les conteneurs et la mâche hôte, nous allons voir une liste non exhaustive de `Dockerfiles` décrivant des images utiles pour du développement web.
 
@@ -213,30 +215,30 @@ A vous d'ajouter ou de remplacer certains outils par ceux que vous préférez.
 
 La commande permettant de générer des certificats auto-signés est `gencert`. Si l'on souhaite générer un certificat dans une image fille, on utilisera une instruction `RUN` pour exécuter le script en lui passant le nom de domaine complet (`fqdn`, par exemple `www.mon-projet.local`) en argument.
 
-  # Dockerfile fils
-  RUN gencert www.mon-projet.local
+    # Dockerfile fils
+    RUN gencert www.mon-projet.local
 
 Ensuite, il faudra configurer correctement le virtualhost du projet.
 
-  # Virtualhost de mon-projet
-  # /etc/apache2/sites-available/mon-projet.conf
-  <VirtualHost *:443>
-    SSLEngine on
-    SSLCertificateFile /etc/ssl/certs/www.mon-projet.local.crt
-    SSLCertificateKeyFile /etc/ssl/certs/www.mon-projet.local.key
-    # SSL Protocol Adjustments:
-    BrowserMatch "MSIE [2-6]" \
-                    nokeepalive ssl-unclean-shutdown \
-                    downgrade-1.0 force-response-1.0
-    # MSIE 7 and newer should be able to use keepalive
-    BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+    # Virtualhost de mon-projet
+    # /etc/apache2/sites-available/mon-projet.conf
+    <VirtualHost \*:443>
+      SSLEngine on
+      SSLCertificateFile /etc/ssl/certs/www.mon-projet.local.crt
+      SSLCertificateKeyFile /etc/ssl/certs/www.mon-projet.local.key
+      # SSL Protocol Adjustments:
+      BrowserMatch "MSIE [2-6]" \
+                      nokeepalive ssl-unclean-shutdown \
+                      downgrade-1.0 force-response-1.0
+      # MSIE 7 and newer should be able to use keepalive
+      BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
-    # Complétez avec votre configuration de virtualhost
-    ...
-
-  </VirtualHost>
+      # Complétez avec votre configuration de virtualhost
+      ...
+    </VirtualHost>
 
 Par défaut, les conteneurs lancés par cette image retournent une page `phpinfo()` aux adresses http://localhost et https://localhost.
+
 
 #### Nginx
 **Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/nginx).**
@@ -264,37 +266,20 @@ Quelques outils sont installés globalement avec l'utilisateur `dev`. C'est une 
 
 Comme pour `Node.js`, il ne s'agit pas vraiement d'un serveur web en tant que tel. La commande par défaut de cette image lance une console `Python`. Ce sera aux `Dockerfiles` des projets utilisant cette image de préciser la commande permettant de lancer leur application.
 
+
 ### Serveurs de bases de données
 
-#### MariaDB
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/mariadb).**
+Pour les conteneurs de serveur de base de données, je préfère **utiliser les images officielles**. Les besoins ne sont pas les mêmes que pour les conteneurs qui exécutent le code de l'application et **nous pouvons nous passer des outils installés dans l'image de base**.
 
-Notre serveur `MariaDB` de développement a une **configuration extémement minimale**. L'utilisateur `root` est le seul qui existe, il n'a pas de mot de passe et est accessible depuis [les conteneurs liés](https://docs.docker.com/userguide/dockerlinks/#container-linking) et la machine hôte si le port 3306 est bien [publié sur la machine hôte](https://docs.docker.com/reference/run/#expose-incoming-ports).
+Ces images officielles peuvent faciliter l'initialisation des conteneurs (par exemple créer un utilisateur et définir son mot de passe) en passant des variables d'environnement lors du démarrage d'un conteneur. C'est le cas pour les images officielles de [PostgreSQL](https://hub.docker.com/_/postgres/), [MariaDB](https://hub.docker.com/_/mariadb/),
 
-Le dossier `/var/lib/mysql` est [déclaré comme `VOLUME` pour faire persister les données](https://docs.docker.com/userguide/dockervolumes/).
+**Les besoins pour la gestion des droits d'écriture et le backup des données sont différents** des images précédentes. Nous n'avons pas besoin de modifier les fichiers d'une base de données depuis la machine hôte comme nous le faisons pour le code. Il est préfèrable d'utiliser les volumes sans les monter depuis la machine hôte. On évite ainsi 2 problèmes:
 
-#### PostgreSQL
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/postgresql).**
+* La gestion des permissions sur les fichiers du volume entre la machine hôte et le conteneur (différences de `UID` / `GID` et droits de lecture / écriture / exécution).
+* En montant un volume de la machine hôte dans un conteneur, on écrase le contenu dans le conteneur si le dossier existe déjà. Ce dossier contient parfois des données nécessaire au serveur, même lorsqu'il ne contient pas encore de données.
 
-Notre serveur `PostgreSQL` de développement a lui aussi une **configuration extémement minimale**. Il dispose d'un utilisateur `docker` (mot de passe "docker").
-
-Les dossiers `/etc/postgresql`, `/var/log/postgresql` et `/var/lib/postgresql`sont [déclarés comme `VOLUME` pour faire persister les données](https://docs.docker.com/userguide/dockervolumes/).
-
-#### MongoDB
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/mongodb).**
-
-Notre serveur `MongoDB` de développement a lui aussi une **configuration extémement minimale**. Il est accessible depuis [les conteneurs liés](https://docs.docker.com/userguide/dockerlinks/#container-linking) et la machine hôte si le port 27017 est bien [publié sur la machine hôte](https://docs.docker.com/reference/run/#expose-incoming-ports).
-
-Le dossier `/data/db` est [déclaré comme `VOLUME` pour faire persister les données](https://docs.docker.com/userguide/dockervolumes/).
-
-
-### Serveurs de cache
-
-#### Memcached
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/memcached).**
-
-Notre serveur Memcached de développement a une **configuration extémement minimale**. Le service est accessible sur le port 11211 depuis [les conteneurs liés](https://docs.docker.com/userguide/dockerlinks/#container-linking) et depuis la machine hôte si le port 11211 est bien [publié sur la machine hôte](https://docs.docker.com/reference/run/#expose-incoming-ports).
+En contrepartie, **la persistance et la sauvegarde/restauration des données seront un peu plus compliquées**. On peut utiliser [un conteneur destiné exclusivement au partage de volume](http://docs.docker.com/engine/userguide/dockervolumes/#adding-a-data-volume) pour gérer cela. Je vous conseille de bien lire et de bien comprendre [la documentation sur les volumes](http://docs.docker.com/engine/userguide/dockervolumes/) pour **choisir votre stratégie en fonction du projet**, de la quantité et du type de données, du nombre de personnes succeptibles de sauvegarder et/ou restaurer des données de test/développement.
 
 ---
 
-[Lire la suite à propos de la mise en place des environnements de développement](/monter-ses-environnements-de-developpement-avec-docker-partie-3/)
+A présent que nous avons des images permettant de faire fonctionner les services qui nous intéressent avec les outils de développement adéquats, vous pouvez [lire la suite à propos de la mise en place des environnements de développement](/monter-ses-environnements-de-developpement-avec-docker-partie-3/).

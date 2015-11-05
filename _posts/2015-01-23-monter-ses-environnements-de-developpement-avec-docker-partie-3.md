@@ -5,7 +5,7 @@ permalink: monter-ses-environnements-de-developpement-avec-docker-partie-3/
 logo: /assets/img/baleine3.jpg
 tags: docker français
 categories: post
-excerpt: Comment utiliser les images précédement créées ? Architecture des environnements de développement - Utilisation de docker-compose - Gestion des droits sur les fichier partagés entre l'hôte et les conteneurs - Persistance des données - Exemples d'environnements pour des projets Magento, Symfony, Django, Express.js, Sails.js
+excerpt: Comment utiliser les images précédement créées ? Architecture des environnements de développement - Utilisation de docker-compose - Gestion des droits sur les fichier partagés entre l'hôte et les conteneurs - Persistance des données - Exemples d'environnements pour des projets Magento, Symfony, Express.js, Sails.js.
 ---
 Cette article est le dernier d'une série de trois. Ces articles ne sont pas destinés à enseigner `Docker`, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.
 
@@ -16,7 +16,7 @@ Nous avons vu [pourquoi `Docker` était intéressant pour monter des environneme
 
 ### Utilisation de docker-compose
 
-[`Docker-compose`](https://docs.docker.com/compose/) (anciennement [`Fig`]) est un outil qui permet de facilement **définir, démarrer et arrêter un ensemble de conteneurs.** Le principe est d'écrire un fichier `docker-compose.yml` qui décrira les conteneurs à lancer avec des options similaires à celles de la commande `docker run` :
+[`Docker-compose`](https://docs.docker.com/compose/) (anciennement `Fig`) est un outil qui permet de facilement **définir, démarrer et arrêter un ensemble de conteneurs.** Le principe est d'écrire un fichier `docker-compose.yml` qui décrira les conteneurs à lancer avec des options similaires à celles de la commande `docker run` :
 
 * `image` pour spécifier l'image à utiliser.
 * `links` pour lier un conteneur à un autre.
@@ -188,7 +188,7 @@ La ligne à ajouter au fichier `/etc/hosts` pour associer l'adresse IP locale à
 
 <pre><code class="bash">127.0.0.1 express.local</code></pre>
 
-Dans l'image `Node.js`, nous installons [`express-generator`](https://www.npmjs.com/package/express-generator) qui sera utilisé par la commande `generate-app`. Pour faciliter le développement et ne pas avoir à redémarrer les conteneurs après chaque modification, démarrons l'application avec [`forever`](https://github.com/foreverjs/forever) en utilisant l'option `-w` pour redémarrer l'applicationquand nécessaire. Un fichier `.foreverignore` installé par la commande `generate-app` permettra d'éviter les redémarrages lorsque l'application écrit dans les dossier `log` et `.tmp`. On pourra modifier ce fichier avec les besoins de l'application.
+Dans l'image `Node.js`, nous installons [`express-generator`](https://www.npmjs.com/package/express-generator) qui sera utilisé par la commande `generate-app`. Pour faciliter le développement et ne pas avoir à redémarrer les conteneurs après chaque modification, utilisons [`forever`](https://github.com/foreverjs/forever) avec l'option `-w` pour que l'application redémarrer lorsque le code est modifié. Un fichier `.foreverignore` installé par la commande `generate-app` permettra d'éviter les redémarrages lorsque l'application écrit dans les dossier `log` et `.tmp`. On pourra modifier ce fichier avec les besoins de l'application.
 
 Cet environnement ne comprend pas de serveur de base de données, nous n'avons qu'à utiliser trois lignes de commande pour le mettre en place.
 

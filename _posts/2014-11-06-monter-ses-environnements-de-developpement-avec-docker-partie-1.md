@@ -9,10 +9,12 @@ excerpt: Cet article est une introduction pour expliquer les raisons d'utiliser 
 ---
 Cet article est le premier d'une série de trois. Ces articles ne sont pas destinés à enseigner Docker, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.
 
+
 ## Pourquoi ces articles ?
 Cet article est une introduction pour expliquer les raisons d'utiliser Docker pour monter des environnements de développement. Les articles suivants proposeront une solution pour la mise en place de ces environnements de développement.
 
 Attention : **ces articles ne traitent exclusivement que d'environnements de développement.** Certains choix techniques fait ici seraient probablement perçus comme de mauvaises pratiques et seraient proscrits pour une utilisation en production. Bien sûr, Docker existe aussi pour faciliter le déployement d'une application sur différents environnements (QA, preprod, prod ...) mais à mon avis, un environnement de développement contient suffisamment de particularités pour utiliser sa propre image avec des règles moins strictes que sur les autres environnements : outils de debug, accès aux logs, tests de modification de configuration ...
+
 
 ## Qu'est ce que Docker ?
 <img src="/assets/img/logo_docker.png" style="float:right; margin:3%" alt="logo docker" title="logo docker" />
@@ -27,7 +29,9 @@ Docker fait donc fonctionner des processus linux sur une machine hôte sous linu
 
 Avant de lire les articles suivants, il faudra vous assurer de comprendre les bases de [Docker](https://docs.docker.com/) et l'utilisation des [Dockerfiles](https://docs.docker.com/reference/builder/).
 
+
 ## Pourquoi l'utiliser pour votre environnement de développement ?
+
 ### Le besoin : un environnement de développement sur mesure
 Vous travaillez sur plusieurs projets et chacun de ces projets a un environnement d'exécution spécifique : différences de langage, de serveur de base de données, de serveur de cache, différences de version ou des extensions installées.
 

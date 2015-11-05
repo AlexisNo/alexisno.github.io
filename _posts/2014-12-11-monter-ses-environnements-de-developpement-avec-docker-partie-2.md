@@ -5,7 +5,7 @@ permalink: monter-ses-environnements-de-developpement-avec-docker-partie-2/
 logo: /assets/img/baleine2.jpg
 tags: docker français
 categories: post
-excerpt: "Création une image de base - Publier sur Dockerhub - Tester et débugger - Problèmatiques liées à une installation scriptée - Gestions des permissions - Création d'images pour environnements de développement : mailcatcher, PHP, Node.js, Python, Apache, Nginx - Utilisation des images de serveur de base de données"
+excerpt: "Création une image de base - Publier sur Dockerhub - Tester et débugger - Problèmatiques liées à une installation scriptée - Gestions des permissions - Création d'images pour environnements de développement : mailcatcher, PHP, Node.js, Python, Apache, Nginx - Utilisation des images de serveur de base de données".
 ---
 Cet article est le deuxième d'une série de trois. Ces articles ne sont pas destinés à enseigner Docker, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.
 
@@ -18,6 +18,7 @@ Voici ce que vous devez déjà connaitre de Docker avant lire cet article :
 
 
 Nous allons créer une image de base sur laquelle nous allons installer quelques outils courants et les configurer. Toutes les images que nous créerons ensuite seront basées sur cette image (grâce à l'instruction `FROM` de leur `Dockerfile`).
+
 
 ## Créer une image de base
 
@@ -93,6 +94,7 @@ L'image est créée, on peut alors la tester en exécutant un shell dans un cont
 </code></pre>
 
 ### Publication de l'image sur Dockerhub
+
 L'image existe sur votre poste, partageons là avec le reste du monde.
 
 Créez un compte sur [*Docker Hub*](https://hub.docker.com/). **Vous aurez alors un nom d'utilisateur**.
@@ -112,7 +114,6 @@ Pour aller plus loin, vous pouvez vous intéresser aux [builds automatisés](htt
 
 Ce premier `Dockerfile` était très simple et nous n'avons rencontré aucune difficulté particulière. Mais avant de poursuivre avec les images filles, arrétons nous sur quelques outils utiles pour tester et débugger
 
-
 ### Tester et débugger en se connectant à un conteneur en cours d'exécution
 
 Il peut être utile d'exécuter un shell dans un conteneur, surtout pour un environnement de développement. ~~Il existe deux possibilités pour cela : faire tourner un service SSH dans les conteneurs ou utiliser `nsenter`. Personnellement, je préfère utiliser cette seconde méthode. C'est la méthode recommandée dans [un article de jpetazzo sur le blog de Docker](http://blog.docker.com/2014/06/why-you-dont-need-to-run-sshd-in-docker/). La condition est d'être root sur la machine hôte, ce qui est notre cas pour notre environnement de développement. Pour installer et utiliser simplement `nsenter`, référez vous au [dépot de jpetazzo](https://github.com/jpetazzo/nsenter) et utilisez le helper `docker-enter`.~~
@@ -120,7 +121,6 @@ Il peut être utile d'exécuter un shell dans un conteneur, surtout pour un envi
 La commande `exec` permet de faire ceci encore plus simplement [depuis docker 1.3](http://blog.docker.com/2014/10/docker-1-3-signed-images-process-injection-security-options-mac-shared-directories/).
 
     docker exec -it <id_du_conteneur> /bin/bash
-
 
 ### Particularités liées à l'installation scriptée
 
@@ -160,7 +160,6 @@ Les clés que nous cherchons sont donc `mysql-server/root_password` et `mysql-se
     RUN echo "mariadb-server mariadb-server/root_password password mot-de-passe-root" | debconf-set-selections
     RUN echo "mariadb-server mariadb-server/root_password_again password mot-de-passe-root" | debconf-set-selections
 
-
 ### Gestion des droits sur les fichiers partagés entre les conteneurs et la machine hôte
 
 Comme indiqué plus haut, certains fichiers et dossiers partagés avec la machine hôte devront être accessibles en écriture. **Dans le conteneur, ce sera l'utilisateur `dev` qui en sera propriétaire**. Pour que l'utilisateur de la machine hôte en soit aussi propriétaire, **il faut que le couple `UID` / `GID` des deux utilisateurs soit identique**. Par défaut l'`UID` et le `GID` de l'utilisateur `dev` vaudront `1000`. Si l'on souhaite modifier ces valeurs pour les faires correspondre aux identifiants de l'utilisateur sur la machine hôte, on pourra utiliser la commande `change-dev-id` qui est inclue dans l'image de base présentée ici.
@@ -189,7 +188,6 @@ Voici un shéma qui présente la hérarchie des images décrites dans cet articl
 
 <img title="Hérarchie des images" alt="Hérarchie des images" src="/assets/img/docker-images-hierarchy.png" width="100%" />
 
-
 ### Serveur d'e-mail
 
 **Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/mailcatcher).**
@@ -198,10 +196,10 @@ Pour pouvoir tester des envois d'e-mail et éviter d'en envoyer par accident, [u
 
 ### Langages / Serveurs web
 
-#### Apache PHP
+#### Apache + mod_php
 **Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/apache-php).**
 
-Notre serveur `Apache` / `PHP` de développement **doit fournir des outils plus ou moins indispensables pour le développeur**. Voici ceux qui sont installés dans l'image :
+Notre serveur `apache-php` de développement **doit fournir des outils plus ou moins indispensables pour le développeur**. Voici ceux qui sont installés dans l'image :
 
 * `Mailcatcher` pour pouvoir utiliser la commande `catchmail` analogue à `sendmail` et envoyer des emails sur un conteneur `mailcatcher`.
 * `Xdebug` pour permettre de faire du debug et du profiling.
@@ -239,18 +237,17 @@ Ensuite, il faudra configurer correctement le virtualhost du projet.
 
 Par défaut, les conteneurs lancés par cette image retournent une page `phpinfo()` aux adresses http://localhost et https://localhost.
 
-
 #### Nginx
 **Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/nginx).**
 
-Comme l'image `Apache` / `PHP`, l'image `Nginx` comporte la commande permettant de générer des certificats auto-signés `gencert`.
+Comme l'image `apache-php`, l'image `nginx` comporte la commande permettant de générer des certificats auto-signés `gencert`.
 
 Les conteneurs lancés par cette image retournent la page par défaut de `Nginx` aux adresses http://localhost et https://localhost.
 
-#### Nginx PHP
+#### Nginx + PHP-FPM
 **Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/nginx/children/nginx-php).**
 
-Dans l'image `Nginx` / `PHP`, on retrouve tous les utilitaires installés sur l'image `Apache` / `PHP`. Mais cette fois, `PHP` fonctionne [avec `FPM`](http://php.net/manual/fr/install.fpm.php).
+Dans l'image `nginx-php`, on retrouve tous les utilitaires installés sur l'image `apache-php`. Mais cette fois, `PHP` fonctionne [avec `PHP-FPM`](http://php.net/manual/fr/install.fpm.php).
 
 Par défaut, les conteneurs lancés par cette image retournent une page `phpinfo()` aux adresses http://localhost et https://localhost.
 
@@ -264,19 +261,17 @@ Quelques outils sont installés globalement avec l'utilisateur `dev`. C'est une 
 #### Python
 **Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/python).**
 
-Comme pour `Node.js`, il ne s'agit pas vraiement d'un serveur web en tant que tel. La commande par défaut de cette image lance une console `Python`. Ce sera aux `Dockerfiles` des projets utilisant cette image de préciser la commande permettant de lancer leur application.
+Comme pour `Node.js`, il ne s'agit pas d'un serveur web en tant que tel. La commande par défaut de cette image lance une console `Python`. Ce sera aux `Dockerfiles` des projets utilisant cette image de préciser la commande permettant de lancer leur application.
 
 
 ### Serveurs de bases de données
 
 #### Profiter des fonctionalités fournies dans les images officielles
-
 Pour les conteneurs de serveur de base de données, je préfère **utiliser [les images officielles](https://hub.docker.com/search/?q=database&page=1&isAutomated=0&isOfficial=1&pullCount=0&starCount=0)**. Les besoins ne sont pas les mêmes que pour les conteneurs qui exécutent le code de l'application et **nous pouvons nous passer des outils installés dans l'image de base**.
 
 Ces images officielles peuvent faciliter l'initialisation des conteneurs (par exemple créer un utilisateur et définir son mot de passe) en passant des variables d'environnement lors du démarrage d'un conteneur. C'est le cas pour les images de [`PostgreSQL`](https://hub.docker.com/_/postgres/) et [`MariaDB`](https://hub.docker.com/_/mariadb/). Si besoin, on peut modifier la configuration de ces images en montant un fichier de configuration dans un volume ou en créant une nouvelle image se basant sur celle officielle.
 
 #### Droits d'accès, persistance, sauvegarde et restauration  
-
 **Les besoins pour la gestion des droits d'écriture et le backup des données sont différents** des images précédentes. Nous n'avons pas besoin de modifier les fichiers d'une base de données depuis la machine hôte comme nous le faisons pour le code. Il est préfèrable d'utiliser les volumes sans les monter depuis la machine hôte. On évite ainsi deux problèmes:
 
 * Pas besoin de gérer les permissions sur les fichiers du volume entre la machine hôte et le conteneur (différences de `UID` / `GID` et droits de lecture / écriture / exécution).

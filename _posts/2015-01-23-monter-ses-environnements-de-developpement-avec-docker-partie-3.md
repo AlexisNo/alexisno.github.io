@@ -45,7 +45,6 @@ Ensuite, la commande `docker-compose` permettra de facilement créer, démarrer,
 
 Il existe beaucoup d'autres [commandes utiles](http://docs.docker.com/v1.7/compose/cli/).
 
-
 ### Arborescence générale
 
 Chaque environnement de développement que nous allons mettre en place suivra les mêmes principes :
@@ -57,13 +56,11 @@ Chaque environnement de développement que nous allons mettre en place suivra le
 
 A vous de modifier cette structure pour vos projets si vous le souhaitez.
 
-
 ### Gestion des droits sur les fichiers partagés entre les conteneurs et la machine hôte
 
 Pour chaque environnement de développement, **les sources du projet appartiendront à l'utilisateur `dev` du conteneur**. Si l'utilisateur de la machine hôte a un couple `UID` / `GID` différent de 1000, on pourra **utiliser la commande `change-dev-id`** [décrite dans l'article précédent](http://127.0.0.1:4000/monter-ses-environnements-de-developpement-avec-docker-partie-2/#gestion-des-droits-sur-les-fichiers-partags-entre-les-conteneurs-et-la-machine-hte).
 
 En revanche, **les ressources du dossier `/docker-compose/data` appartiendront éventuellement à un autre utilisateur** (mysql, postgresql, www-data ...). Si tel est le cas, ces fichiers auront des permissions qui ne correspondront pas à l'environnement de la machine hôte. Si l'utilisateur de la machine hôte n'y a pás accès on pourra consulter ces fichiers avec l'utilisateur `root` ou en utilisant `sudo`.
-
 
 ### Persistance et partage pour les serveurs de base de données
 
@@ -72,17 +69,6 @@ Pour chaque serveur de base de données qui composera l'un de nos environnement 
 * On ne risque pas de perdre ses données de test en utilisant la commande `docker-compose rm`.
 * On pourra facilement créer différents conteneurs dédiés au partage de volume pour réaliser des tests avec des schémas et/ou données différentes.
 * Si plusieurs développeurs travaillent sur le projet, il sera facile de **récupérer les données d'un collègue sans être obligé d'exécuter un dump potentiellement long**.
-
-    # Archivage des données depuis l'environnement de développement A
-    $ cd /chemin/vers/le/projet/sur/A/docker-compose/data/
-    $ sudo tar cvzf db.tar.gz db
-
-    # Récupérer l'archive créée depuis l'environnement de développement B avec scp,
-    $ scp utilisateur@machine-A:/chemin/vers/le/projet/sur/A/docker-compose/data/db.tar.gz /chemin/vers/le/projet/sur/B/docker-compose/data/db.tar.gz
-
-    # Extration des données
-    $ cd /chemin/vers/le/projet/sur/B/docker-compose/data/
-    $ sudo tar xvzf db.tar.gz
 
 
 ## Environnements Magento

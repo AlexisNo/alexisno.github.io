@@ -3,9 +3,9 @@ layout: post
 title: Monter ses environnements de développement avec Docker - Partie 2
 permalink: monter-ses-environnements-de-developpement-avec-docker-partie-2/
 logo: /assets/img/baleine2.jpg
-tags: docker fr
+tags: docker français
 categories: post
-excerpt: "Création une image de base - Publier sur Dockerhub - Tester et débugger - Problèmatiques liées à une installation scriptée - Gestions des droits - Création d'images pour environnements de développement : mailcatcher, PHP, Node.js, Python, Apache, Nginx."
+excerpt: "Création une image de base - Publier sur Dockerhub - Tester et débugger - Problèmatiques liées à une installation scriptée - Gestions des permissions - Création d'images pour environnements de développement : mailcatcher, PHP, Node.js, Python, Apache, Nginx - Utilisation des images de serveur de base de données"
 ---
 Cet article est le deuxième d'une série de trois. Ces articles ne sont pas destinés à enseigner Docker, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.
 
@@ -269,17 +269,21 @@ Comme pour `Node.js`, il ne s'agit pas vraiement d'un serveur web en tant que te
 
 ### Serveurs de bases de données
 
-Pour les conteneurs de serveur de base de données, je préfère **utiliser les images officielles**. Les besoins ne sont pas les mêmes que pour les conteneurs qui exécutent le code de l'application et **nous pouvons nous passer des outils installés dans l'image de base**.
+#### Profiter des fonctionalités fournies dans les images officielles
 
-Ces images officielles peuvent faciliter l'initialisation des conteneurs (par exemple créer un utilisateur et définir son mot de passe) en passant des variables d'environnement lors du démarrage d'un conteneur. C'est le cas pour les images officielles de [PostgreSQL](https://hub.docker.com/_/postgres/), [MariaDB](https://hub.docker.com/_/mariadb/),
+Pour les conteneurs de serveur de base de données, je préfère **utiliser [les images officielles](https://hub.docker.com/search/?q=database&page=1&isAutomated=0&isOfficial=1&pullCount=0&starCount=0)**. Les besoins ne sont pas les mêmes que pour les conteneurs qui exécutent le code de l'application et **nous pouvons nous passer des outils installés dans l'image de base**.
 
-**Les besoins pour la gestion des droits d'écriture et le backup des données sont différents** des images précédentes. Nous n'avons pas besoin de modifier les fichiers d'une base de données depuis la machine hôte comme nous le faisons pour le code. Il est préfèrable d'utiliser les volumes sans les monter depuis la machine hôte. On évite ainsi 2 problèmes:
+Ces images officielles peuvent faciliter l'initialisation des conteneurs (par exemple créer un utilisateur et définir son mot de passe) en passant des variables d'environnement lors du démarrage d'un conteneur. C'est le cas pour les images de [`PostgreSQL`](https://hub.docker.com/_/postgres/) et [`MariaDB`](https://hub.docker.com/_/mariadb/). Si besoin, on peut modifier la configuration de ces images en montant un fichier de configuration dans un volume ou en créant une nouvelle image se basant sur celle officielle.
 
-* La gestion des permissions sur les fichiers du volume entre la machine hôte et le conteneur (différences de `UID` / `GID` et droits de lecture / écriture / exécution).
-* En montant un volume de la machine hôte dans un conteneur, on écrase le contenu dans le conteneur si le dossier existe déjà. Ce dossier contient parfois des données nécessaire au serveur, même lorsqu'il ne contient pas encore de données.
+#### Droits d'accès, persistance, sauvegarde et restauration  
 
-En contrepartie, **la persistance et la sauvegarde/restauration des données seront un peu plus compliquées**. On peut utiliser [un conteneur destiné exclusivement au partage de volume](http://docs.docker.com/engine/userguide/dockervolumes/#adding-a-data-volume) pour gérer cela. Je vous conseille de bien lire et de bien comprendre [la documentation sur les volumes](http://docs.docker.com/engine/userguide/dockervolumes/) pour **choisir votre stratégie en fonction du projet**, de la quantité et du type de données, du nombre de personnes succeptibles de sauvegarder et/ou restaurer des données de test/développement.
+**Les besoins pour la gestion des droits d'écriture et le backup des données sont différents** des images précédentes. Nous n'avons pas besoin de modifier les fichiers d'une base de données depuis la machine hôte comme nous le faisons pour le code. Il est préfèrable d'utiliser les volumes sans les monter depuis la machine hôte. On évite ainsi deux problèmes:
+
+* Pas besoin de gérer les permissions sur les fichiers du volume entre la machine hôte et le conteneur (différences de `UID` / `GID` et droits de lecture / écriture / exécution).
+* Lorsque l'on monte un volume de la machine hôte dans un conteneur, on écrase le contenu dans le conteneur si le dossier existe déjà. Ce dossier contient parfois des données nécessaire au serveur, même lorsqu'il ne contient pas encore de données (par exemple `/var/lib/mysql` ou  `/var/lib/postgresql/data`).
+
+En contrepartie, **la persistance, la sauvegarde et la restauration des données seront un peu plus compliquées**. On peut utiliser [un conteneur destiné exclusivement au partage de volume](http://docs.docker.com/engine/userguide/dockervolumes/#adding-a-data-volume) pour gérer cela. Je vous conseille de bien lire et de bien comprendre [la documentation sur les volumes](http://docs.docker.com/engine/userguide/dockervolumes/) pour **choisir votre stratégie en fonction du projet**, de la quantité et du type de données, du nombre de personnes succeptibles de sauvegarder et/ou restaurer des données de test/développement.
 
 ---
 
-A présent que nous avons des images permettant de faire fonctionner les services qui nous intéressent avec les outils de développement adéquats, vous pouvez [lire la suite à propos de la mise en place des environnements de développement](/monter-ses-environnements-de-developpement-avec-docker-partie-3/).
+Nous avons des images permettant de faire fonctionner les services qui nous intéressent avec les outils de développement adéquats. A présent nous devont faire communiquer les services impliqués dans le fonctionnement de nos applications et faciliter l'installation d'un nouvel environnement de développement complet. Vous pouvez [lire la suite à propos de la mise en place des environnements de développement](/monter-ses-environnements-de-developpement-avec-docker-partie-3/).

@@ -3,9 +3,9 @@ layout: post
 title: Monter ses environnements de développement avec Docker - Partie 2
 permalink: monter-ses-environnements-de-developpement-avec-docker-partie-2/
 logo: /assets/img/baleine2.jpg
-tags: docker français
+tags: docker fr
 categories: post
-excerpt: "Création une image de base - Publier sur Dockerhub - Tester et débugger - Problèmatiques liées à une installation scriptée - Gestions des permissions - Création d'images pour environnements de développement : mailcatcher, PHP, Node.js, Python, Apache, Nginx - Utilisation des images de serveur de base de données".
+excerpt: "Création une image de base - Publier sur Dockerhub - Tester et débugger - Problèmatiques liées à une installation scriptée - Gestions des permissions - Création d'images pour environnements de développement : mailcatcher, PHP, Node.js, Python, Apache, Nginx - Utilisation des images de serveur de base de données."
 ---
 Cet article est le deuxième d'une série de trois. Ces articles ne sont pas destinés à enseigner Docker, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.
 

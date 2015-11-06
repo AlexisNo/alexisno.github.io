@@ -3,9 +3,9 @@ layout: post
 title: Monter ses environnements de développement avec docker - Partie 3
 permalink: monter-ses-environnements-de-developpement-avec-docker-partie-3/
 logo: /assets/img/baleine3.jpg
-tags: docker français
+tags: docker fr
 categories: post
-excerpt: Comment utiliser les images précédement créées ? Architecture des environnements de développement - Utilisation de docker-compose - Gestion des droits sur les fichier partagés entre l'hôte et les conteneurs - Persistance des données - Exemples d'environnements pour des projets Magento, Symfony, Express.js, Sails.js.
+excerpt: "Comment utiliser les images précédement créées ? Architecture des environnements de développement - Utilisation de docker-compose - Gestion des droits sur les fichier partagés entre l'hôte et les conteneurs - Persistance des données - Exemples d'environnements pour des projets Magento, Symfony, Express.js, Sails.js."
 ---
 Cette article est le dernier d'une série de trois. Ces articles ne sont pas destinés à enseigner `Docker`, mais ils proposent une solution de gestion d'environnements de développement l'utilisant.
 
@@ -243,7 +243,7 @@ Vous constaterez que les permissions du dossier `docker-compose/data/mongodb` ne
     -rw-r--r-- 1 mongodb mongodb       69 Nov  6 13:17 storage.bson
 
     # Sur la machine hôte, l'utilisateur mongodb n'existe pas. Les permissions sont erronées
-    # et il ne faut pas les modifier sous peine de 
+    # et il ne faut pas les modifier sous peine de
     $ ls -la docker-compose/data/mongodb
     total 163856
     drwxr-xr-x 3  999 root       4096 Nov  6 11:24 .

@@ -205,7 +205,7 @@ Cet environnement ne comprend pas de serveur de base de données, nous n'avons q
 ### Sails.js / Nginx / MongoDB
 **Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/dev-dockerfiles/tree/master/examples/sails)**.
 
-[`Sails.js`](http://sailsjs.org/) est un framework MVC basé sur `Express.js` et `socket.io`. Il permet notamment de réaliser très rapidement des services `REST`.
+[`Sails.js`](http://sailsjs.org/) est un framework MVC basé sur `Express.js` et `socket.io`. Il permet notamment de créer rapidement des services `REST` et est très bon pour faire des applications temps réel.
 
 Cet environnement `Sails.js` comporte un conteneur `Node.js`, un conteneur `Nginx` et un conteneur `MongoDB`.
 
@@ -213,7 +213,78 @@ La ligne à ajouter au fichier `/etc/hosts` pour associer l'adresse IP locale à
 
 <pre><code class="bash">127.0.0.1 sails.local</code></pre>
 
-Comme pour les environnements précédents, cet environnement créera automatiquement une application d'exemple si les sources de `Sails.js` ne sont pas déjà présentes. Cette application par défaut présente une api `REST` (à l'adresse http://sails.local/demo) que vous pouvez tester avec un outil comme [`Postman`](http://www.getpostman.com/).
+La configuration de `Nginx` supporte les connections websockets.
+
+Contrairement aux environnements précédents, pour présenter une alternative, nous n'utilisons pas de conteneur dédié à un volume pour la persistance des données, mais nous stockons les données du serveur mongodb dans le dossier `docker-compose/data/`. Nous n'avons qu'à utiliser trois lignes de commande pour mettre l'environnement en place.
+
+    # "build" des images spécifiques au projet
+    $ docker-compose build
+
+    # Génération d'une application Express.js
+    $ docker-compose run nodejs generate-app
+
+    # Lancement de l'environnement
+    $ docker-compose up
+
+Vous constaterez que les permissions du dossier `docker-compose/data/mongodb` ne correspondent pas
+
+    # Dans le conteneur, les fichiers de la base de données ont des permissions correctes
+    # ils appartiennent à l'utilisateur et au groupe "mongodb"
+    docker exec sails_db_1 ls -la /data/db
+    total 163860
+    drwxr-xr-x 3 mongodb root        4096 Nov  6 13:24 .
+    drwxr-xr-x 3 root    root        4096 Sep  9 22:37 ..
+    drwxr-xr-x 2 mongodb mongodb     4096 Nov  6 14:17 journal
+    -rw------- 1 mongodb mongodb 67108864 Nov  6 14:17 local.0
+    -rw------- 1 mongodb mongodb 16777216 Nov  6 14:17 local.ns
+    -rwxr-xr-x 1 mongodb mongodb        2 Nov  6 14:17 mongod.lock
+    -rw------- 1 mongodb mongodb 67108864 Nov  6 13:54 sails.0
+    -rw------- 1 mongodb mongodb 16777216 Nov  6 13:54 sails.ns
+    -rw-r--r-- 1 mongodb mongodb       69 Nov  6 13:17 storage.bson
+
+    # Sur la machine hôte, l'utilisateur mongodb n'existe pas. Les permissions sont erronées
+    # et il ne faut pas les modifier sous peine de 
+    $ ls -la docker-compose/data/mongodb
+    total 163856
+    drwxr-xr-x 3  999 root       4096 Nov  6 11:24 .
+    drwxr-xr-x 3 root root       4096 Nov  6 11:17 ..
+    drwxr-xr-x 2  999 docker     4096 Nov  6 12:12 journal
+    -rw------- 1  999 docker 67108864 Nov  6 11:39 local.0
+    -rw------- 1  999 docker 16777216 Nov  6 11:39 local.ns
+    -rwxr-xr-x 1  999 docker        0 Nov  6 12:12 mongod.lock
+    -rw------- 1  999 docker 67108864 Nov  6 11:54 sails.0
+    -rw------- 1  999 docker 16777216 Nov  6 11:54 sails.ns
+    -rw-r--r-- 1  999 docker       69 Nov  6 11:17 storage.bson
+
+
+Comme pour les environnements précédents, une commande `generate-app` permet de générer une application permettant de tester rapidement l'environnement. Cette application par défaut présente une api `REST` pour manipuler une resource `demo` (à l'adresse http://sails.local/demo) que vous pouvez tester avec un outil comme [`Postman`](http://www.getpostman.com/).
+
+Sails présente aussi des routes qui permettent de réaliser les mêmes actions que l'api `REST` avec des requètes `GET` (à désactiver en production). Voici quelques urls permettant de tester rapidement l'api dans un navigateur ou avec `curl`:
+
+<pre><code class="bash"># Lister les enregistrements
+$ curl http://sails.local/demo
+
+# Créer deux enregistrements
+$ curl http://sails.local/demo/create?name=youpi
+$ curl http://sails.local/demo/create?name=tralala
+
+# Lister les enregistrements à nouveau
+# Utilisez les ids pour réaliser les deux actions suivantes
+$ curl http://sails.local/demo/
+
+# Mettre à jour un enregistrement (remplacez l'id)
+$ curl http://sails.local/demo/update/563cafc71544300f008731c1?name=chouette
+
+# Supprimer un enregistrement (remplacez l'id)
+$ curl http://sails.local/demo/destroy/563cafb01544300f008731c0
+
+# Lister les enregistrements à nouveau
+$ curl http://sails.local/demo/
+</code></pre>
+
+[`Sails.js`](http://sailsjs.org/) fourni immédiatement des fonctionnalités très puissantes qui peuvent ensuite être configurées, surchargées ou désactivées.
+
 
 ## Vos environnements !
+
 A vous de créer les images pour les langages et les technologies qui vous intéressent avec les outils de travail que vous préférez et de les décliner en fonction de vos besoins.

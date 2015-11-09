@@ -38,10 +38,10 @@ J'ai choisi d'utiliser l'image officielle [`ubuntu`](https://registry.hub.docker
 
 ### Ecriture et exécution du Dockerfile
 
-Passons à la pratique, voici le Dockerfile qui va permettre de générer notre image de base. La version exacte que j'utilise et ses fichiers associés sont disponibles [sur cette page](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu).
+Passons à la pratique, voici le Dockerfile qui va permettre de générer notre image de base. La version exacte que j'utilise et ses fichiers associés sont disponibles [sur ce dépot](https://github.com/AlexisNo/docker-ubuntu-dev).
 
     # Utilisation de ubuntu:14.04 comme image de base
-    FROM ubuntu:14.04
+    FROM ubuntu:latest
 
     MAINTAINER Nom Prenom "adresse@example.com"
 
@@ -51,9 +51,8 @@ Passons à la pratique, voici le Dockerfile qui va permettre de générer notre 
         apt-get clean && rm -rf /var/lib/apt/lists/*
 
     # Installation de oh-my-zsh et sélection de zsh comme shell par défault
-    RUN wget --no-check-certificate http://install.ohmyz.sh -O - | /bin/zsh && chsh -s /bin/zsh &&\
-        sed -i 's/# DISABLE_AUTO_UPDATE=true/DISABLE_AUTO_UPDATE=true/g' /root/.zshrc &&\
-        echo TERM=xterm >> ~/.zshrc
+    RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true &&\
+        chsh -s /bin/zsh
 
     # Configuration personnalisée de git
     # Placez un fichier .giconfig contenant vos réglage préférés
@@ -190,14 +189,14 @@ Voici un shéma qui présente la hérarchie des images décrites dans cet articl
 
 ### Serveur d'e-mail
 
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/mailcatcher).**
+Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/docker-mailcatcher).
 
 Pour pouvoir tester des envois d'e-mail et éviter d'en envoyer par accident, [utilisons `MailCatcher`](http://mailcatcher.me/). `MailCatcher` démarre un serveur `SMTP` sur le port `1025`. Les e-mails ne sont pas distribués mais ils sont présentés dans une interface web sur le port `1080`. Ceci permet de pouvoir développer et débugger les envois d'e-mails sans risquer d'en envoyer par erreur.
 
 ### Langages / Serveurs web
 
 #### Apache + mod_php
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/apache-php).**
+Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/docker-apache-php-dev).
 
 Notre serveur `apache-php` de développement **doit fournir des outils plus ou moins indispensables pour le développeur**. Voici ceux qui sont installés dans l'image :
 
@@ -238,31 +237,54 @@ Ensuite, il faudra configurer correctement le virtualhost du projet.
 Par défaut, les conteneurs lancés par cette image retournent une page `phpinfo()` aux adresses http://localhost et https://localhost.
 
 #### Nginx
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/nginx).**
+Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/docker-nginx-dev).
 
 Comme l'image `apache-php`, l'image `nginx` comporte la commande permettant de générer des certificats auto-signés `gencert`.
 
 Les conteneurs lancés par cette image retournent la page par défaut de `Nginx` aux adresses http://localhost et https://localhost.
 
 #### Nginx + PHP-FPM
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/nginx/children/nginx-php).**
+Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/docker-nginx-php-dev).
 
 Dans l'image `nginx-php`, on retrouve tous les utilitaires installés sur l'image `apache-php`. Mais cette fois, `PHP` fonctionne [avec `PHP-FPM`](http://php.net/manual/fr/install.fpm.php).
 
 Par défaut, les conteneurs lancés par cette image retournent une page `phpinfo()` aux adresses http://localhost et https://localhost.
 
 #### Node.js
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/nodejs).**
+Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/docker-nodejs-dev).
 
 Le cas de `Node.js` est un peu différent puisqu'il ne s'agit pas vraiement d'un serveur web en tant que tel. La commande par défaut de cette image lance une console `Node.js`. Ce sera aux `Dockerfiles` des projets utilisant cette image de préciser la commande permettant de lancer leur application.
 
-Quelques outils sont installés globalement avec l'utilisateur `dev`. C'est une bonne pratique que de ne pas utiliser `sudo` pour installer des packages globalement avec `npm`. Ces outils sonts : [`forever`](https://www.npmjs.com/package/forever), [`bower`](http://bower.io/), [`grunt-cli`](http://gruntjs.com/getting-started) et [`node-inspector`](https://github.com/node-inspector/node-inspector).
+Quelques outils sont installés globalement avec l'utilisateur `dev`. C'est une bonne pratique que de ne pas utiliser `sudo` pour installer des packages globalement avec `npm`. Ces outils sonts :
+
+ * [`forever`](https://www.npmjs.com/package/forever) pour contrõler l'execution des application.
+ * [`yeoman`](https://www.npmjs.com/package/yo) pour utiliser des générateurs d'application.
+ * [`bower`](http://bower.io/) pour la gestion des dépendances coté client.
+ * Les lanceurs de tâches [`gulp`](https://www.npmjs.com/package/gulp) et [`grunt-cli`](https://www.npmjs.com/package/grunt-cli).
+ * Le debugger [`node-inspector`](https://www.npmjs.com/package/node-inspector).
+
+Lancer une console Node.js
+
+    $ docker run -it alexisno/nodejs-dev
 
 #### Python
-**Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/dev-dockerfiles/tree/master/ubuntu/children/python).**
+Retrouvez le `Dockerfile` et les fichiers associés [sur ce dépot](https://github.com/AlexisNo/docker-python-dev).
 
 Comme pour `Node.js`, il ne s'agit pas d'un serveur web en tant que tel. La commande par défaut de cette image lance une console `Python`. Ce sera aux `Dockerfiles` des projets utilisant cette image de préciser la commande permettant de lancer leur application.
 
+Les modules installés globalement sont le debugger [`pdb`](https://pypi.python.org/pypi/pudb) et le shell [`ipython`](https://pypi.python.org/pypi/ipython/4.0.0)
+
+Lancer une console Python:
+
+    # Classique - python 2
+    $ docker run -it alexisno/python-dev
+    # IPython - python 2
+    $ docker run -it alexisno/python-dev ipython
+
+    # Classique - python 3
+    $ docker run -it alexisno/python-dev python3
+    # IPython - python 3
+    $ docker run -it alexisno/python-dev ipython3
 
 ### Serveurs de bases de données
 

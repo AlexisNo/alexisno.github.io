@@ -74,7 +74,7 @@ Pour chaque serveur de base de données qui composera l'un de nos environnement 
 ## Environnements Magento
 
 ### Apache / MariaDB / Memcached
-Pour ce premier environnement de développement, nous allons mettre en place une application `Magento` se connectant à une base de données `MariaDB` et stockant les sessions et le cache dans un serveur `memcached`. **Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/dev-dockerfiles/tree/master/examples/magento/apache-php_mariadb_memcached)**.
+Pour ce premier environnement de développement, nous allons mettre en place une application `Magento` se connectant à une base de données `MariaDB` et stockant les sessions et le cache dans un serveur `memcached`. **Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/docker-dev-env-examples/tree/master/magento/apache-php_mariadb_memcached)**.
 
 Nous allons **créer un `Dockerfile` pour surcharger l'image `alexisno/apache-php-dev`** pour différentes raisons :
 
@@ -117,7 +117,7 @@ Accédez au site à l'adresse http://www.magento.local/ et à l'interface d'admi
 Pour relancer l'environnement plus tard, il suffit d'utiliser `docker-compose up` ou `docker-compose start`.
 
 ### Nginx / MariaDB / Memcached
-**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/dev-dockerfiles/tree/master/examples/magento/nginx-php_mariadb_memcached)**.
+**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/docker-dev-env-examples/tree/master/magento/nginx-php_mariadb_memcached)**.
 
 La configuration de cet environnement est très similaire à celle du précédent. Seul le fichier virtualhost écrit pour `Nginx` à la place de `Apache` change.
 
@@ -125,7 +125,7 @@ La configuration de cet environnement est très similaire à celle du précéden
 ## Environnements Symfony
 
 ### Apache / MariaDB
-**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/dev-dockerfiles/tree/master/examples/symfony/apache-php-mariadb)**.
+**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/docker-dev-env-examples/tree/master/symfony/apache-php-mariadb)**.
 
 Nous allons **créer un `Dockerfile` pour surcharger l'image `alexisno/apache-php-dev`** pour différentes raisons :
 
@@ -162,7 +162,7 @@ Les commandes à effecter pour installer l'environnement sont similaires à cell
 Pour relancer l'environnement plus tard, il suffit d'utiliser `docker-compose up` ou `docker-compose start`.
 
 ### Nginx / PostgreSQL
-**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/dev-dockerfiles/tree/master/examples/symfony/nginx-php-postgresql)**.
+**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/docker-dev-env-examples/tree/master/symfony/nginx-php-postgresql)**.
 
 Voici les différences avec l'environnement précédent :
 
@@ -180,7 +180,7 @@ Pour installer l'environnement, seule la commande de création du conteneur déd
 ## Environnements Node.js
 
 ### Express.js / Nginx
-**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/dev-dockerfiles/tree/master/examples/express)**.
+**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/docker-dev-env-examples/tree/master/express)**.
 
 Cet environnement `Express.js` comporte un conteneur `Node.js` et un conteneur `Nginx`.
 
@@ -203,7 +203,7 @@ Cet environnement ne comprend pas de serveur de base de données, nous n'avons q
 
 
 ### Sails.js / Nginx / MongoDB
-**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/dev-dockerfiles/tree/master/examples/sails)**.
+**Vous trouverez les sources nécessaires à la mise en place de cet environnement [ici](https://github.com/AlexisNo/docker-dev-env-examples/tree/master/sails)**.
 
 [`Sails.js`](http://sailsjs.org/) est un framework MVC basé sur `Express.js` et `socket.io`. Il permet notamment de créer rapidement des services `REST` et est très bon pour faire des applications temps réel.
 

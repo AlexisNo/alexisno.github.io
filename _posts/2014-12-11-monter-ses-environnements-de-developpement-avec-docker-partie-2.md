@@ -263,7 +263,7 @@ Quelques outils sont installés globalement avec l'utilisateur `dev`. C'est une 
  * Les lanceurs de tâches [`gulp`](https://www.npmjs.com/package/gulp) et [`grunt-cli`](https://www.npmjs.com/package/grunt-cli).
  * Le debugger [`node-inspector`](https://www.npmjs.com/package/node-inspector).
 
-Lancer une console Node.js
+Pour lancer une console Node.js:
 
     $ docker run -it alexisno/nodejs-dev
 
@@ -274,7 +274,7 @@ Comme pour `Node.js`, il ne s'agit pas d'un serveur web en tant que tel. La comm
 
 Les modules installés globalement sont le debugger [`pdb`](https://pypi.python.org/pypi/pudb) et le shell [`ipython`](https://pypi.python.org/pypi/ipython/4.0.0)
 
-Lancer une console Python:
+Pour lancer une console Python:
 
     # Classique - python 2
     $ docker run -it alexisno/python-dev
